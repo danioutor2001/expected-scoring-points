@@ -2,31 +2,29 @@
 # Probabilistic Expected Points Model (NFL Plays)
 # ===============================
 
-# 1️⃣ Imports
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 
-# 2️⃣ Load the data
 df = pd.read_csv(r"C:\Users\Dani\Downloads\nfl_data_testing_skills.csv")
 
-# 3️⃣ Define scoring/play outcomes as binary targets
+
 df['TD'] = df['actionType'].str.contains('touchdown', case=False).astype(int)
 df['FG'] = df['actionType'].str.contains('field goal', case=False).astype(int)
 df['Safety'] = df['actionType'].str.contains('safety', case=False).astype(int)
 df['Turnover'] = df['actionType'].str.contains('interception|fumble', case=False).astype(int)
 df['Punt'] = df['actionType'].str.contains('punt', case=False).astype(int)
 
-# 4️⃣ Select features
+
 features = [
     "down", "distance", "yardLine", "yardsToEndzone",
     "quarter", "halves", "homeTeamScore", "awayTeamScore"
 ]
 X = df[features]
 
-# 5️⃣ Train a Random Forest classifier for each event
 classifiers = {}
 events = {'TD':7, 'FG':3, 'Safety':-2, 'Turnover':0, 'Punt':0}
 
@@ -38,7 +36,6 @@ for event in events.keys():
     classifiers[event] = clf
     print(f"{event} classifier trained. Test accuracy: {clf.score(X_test, y_test):.3f}")
 
-# 6️⃣ Function to compute EP and Delta EP
 def compute_ep_probabilistic(play_before, play_after=None, classifiers=classifiers, events=events):
     """
     Compute Expected Points (EP) probabilistically using multiple classifiers.
@@ -61,7 +58,7 @@ def compute_ep_probabilistic(play_before, play_after=None, classifiers=classifie
 
     return result
 
-# 7️⃣ Example usage
+
 play_before = {
     "down": 2,
     "distance": 5,
@@ -86,3 +83,4 @@ play_after = {
 
 result = compute_ep_probabilistic(play_before, play_after)
 print(result)
+
